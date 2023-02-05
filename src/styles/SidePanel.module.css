@@ -1,0 +1,22 @@
+.sidePanel {
+  background: #3b5998;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.avatar {
+  border-radius: 50%;
+  height: 5rem;
+  margin-bottom: 1rem;
+  width: 5rem;
+}
+
+.name {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.email {
+  font-size: 1.25rem;
+}

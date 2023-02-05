@@ -1,0 +1,15 @@
+/* Navigator.module.css */
+.navContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: #3b5998;
+  color: white;
+}
+
+.navItem {
+  color: white;
+  text-decoration: none;
+  margin-right: 20px;
+}
