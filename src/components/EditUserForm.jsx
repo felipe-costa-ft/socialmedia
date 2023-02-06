@@ -11,38 +11,44 @@ const UploadImageSchema = Yup.object().shape({
   nome_usuario: Yup.string().required("Required"),
   senha: Yup.string().required("Required"),
   cpf: Yup.string().required("Required"),
-  foto_perfil: Yup.mixed().required("Required"),
 });
 
-const UserForm = () => {
+const EditUserForm = ({ user }) => {
   const inputRef = useRef(null);
   const router = useRouter();
 
   return (
     <Formik
       initialValues={{
-        nome_completo: "",
-        email: "",
-        data_nascimento: "",
-        nome_usuario: "",
-        senha: "",
-        cpf: "",
+        nome_completo: user.nome_completo,
+        email: user.email,
+        data_nascimento: new Date(user.data_nascimento)
+          .toISOString()
+          .slice(0, 10),
+        nome_usuario: user.nome_usuario,
+        senha: user.senha,
+        cpf: user.cpf,
         foto_perfil: null,
       }}
       validationSchema={UploadImageSchema}
       onSubmit={async (values, { setSubmitting, resetForm }) => {
-        const user = new FormData();
-        user.append("nome_completo", values.nome_completo);
-        user.append("email", values.email);
-        user.append("data_nascimento", values.data_nascimento);
-        user.append("nome_usuario", values.nome_usuario);
-        user.append("senha", values.senha);
-        user.append("cpf", values.cpf);
-        user.append("foto_perfil", values.foto_perfil, values.foto_perfil.name);
+        const edited = new FormData();
+        edited.append("nome_completo", values.nome_completo);
+        edited.append("email", values.email);
+        edited.append("data_nascimento", values.data_nascimento);
+        edited.append("nome_usuario", values.nome_usuario);
+        edited.append("senha", values.senha);
+        edited.append("cpf", values.cpf);
+        if (values.foto_perfil)
+          edited.append(
+            "foto_perfil",
+            values.foto_perfil,
+            values.foto_perfil.name
+          );
         setSubmitting(true);
-        fetch("http://localhost:3000/api/user/", {
-          method: "POST",
-          body: user,
+        fetch(`http://localhost:3000/api/user/${user.cpf}`, {
+          method: "PATCH",
+          body: edited,
         })
           .then((response) => response.json())
           .then((data) => {
@@ -137,4 +143,4 @@ const UserForm = () => {
     </Formik>
   );
 };
-export default UserForm;
+export default EditUserForm;

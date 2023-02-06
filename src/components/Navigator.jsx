@@ -7,9 +7,6 @@ const Navigator = () => {
       <Link className={styles.navItem} href="/">
         Home
       </Link>
-      <Link className={styles.navItem} href="/usuarios">
-        Usuários
-      </Link>
       <Link className={styles.navItem} href="/register">
         Registrar Usuário
       </Link>

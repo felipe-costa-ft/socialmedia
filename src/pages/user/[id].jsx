@@ -1,5 +1,7 @@
 import SidePanel from "@/components/SidePanel";
 import React, { useState, useEffect } from "react";
+import styles from "@/styles/User.module.css";
+import PostsList from "@/components/PostsList";
 
 const User = (props) => {
   const [user, setUser] = useState({});
@@ -17,11 +19,12 @@ const User = (props) => {
       }
     };
     fetchUserData();
-  }, []);
+  }, [props.id]);
 
   return (
-    <div>
+    <div className={styles.container}>
       <SidePanel user={user} />
+      <PostsList user={user} />
     </div>
   );
 };

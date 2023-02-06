@@ -1,4 +1,6 @@
 import { pool } from "@/lib/db";
+import nextConnect from "next-connect";
+import multer from "multer";
 
 const deleteUser = async (cpf) => {
   await pool.query(`DELETE FROM usuario WHERE cpf='${cpf}';`);
@@ -10,82 +12,67 @@ const getUser = async (cpf) => {
   return result.rows[0];
 };
 
-const updateUser = async (user_cpf, body) => {
-  const {
-    nome_completo,
-    email,
-    data_nascimento,
-    nome_usuario,
-    senha,
-    cpf,
-    foto_perfil,
-    fk_localizacao_id,
-  } = JSON.parse(body);
+const updateUser = async (user_cpf, body, files) => {
+  const data = body;
 
-  let columnsToUpdate = [];
-  if (nome_completo) {
-    columnsToUpdate.push(`nome_completo = '${nome_completo}'`);
-  }
-  if (email) {
-    columnsToUpdate.push(`email = '${email}'`);
-  }
-  if (data_nascimento) {
-    columnsToUpdate.push(`data_nascimento = '${data_nascimento}'`);
-  }
-  if (nome_usuario) {
-    columnsToUpdate.push(`nome_usuario = '${nome_usuario}'`);
-  }
-  if (senha) {
-    columnsToUpdate.push(`senha = '${senha}'`);
-  }
-  if (cpf) {
-    columnsToUpdate.push(`cpf = '${cpf}'`);
-  }
-  if (fk_localizacao_id) {
-    columnsToUpdate.push(`fk_localizacao_id = '${fk_localizacao_id}'`);
+  let columnsToUpdate = Object.entries(data)
+    .filter(([, value]) => value)
+    .map(([key, value]) => `${key} = '${value}'`)
+    .join(", ");
+
+  let query;
+  let values = [];
+  if (files.length > 0) {
+    columnsToUpdate += ", foto_perfil = $1";
+    values.push(files[0].buffer);
+    query = `UPDATE usuario SET ${columnsToUpdate} WHERE cpf=$2;`;
+  } else {
+    query = `UPDATE usuario SET ${columnsToUpdate} WHERE cpf=$1;`;
   }
 
-  const columns = columnsToUpdate.join(", ");
+  values.push(user_cpf);
 
-  const result = await pool.query(
-    `UPDATE usuario
-    SET ${columns}
-    WHERE cpf='${user_cpf}';`
-  );
+  const result = await pool.query(query, values);
 
   return result.rows[0];
 };
 
-export default async function handler(req, res) {
+const apiRoute = nextConnect({
+  onError(error, req, res) {
+    res
+      .status(501)
+      .json({ error: `Sorry something Happened! ${error.message}` });
+  },
+  onNoMatch(req, res) {
+    res.status(405).json({ error: `Method "${req.method}" Not Allowed` });
+  },
+});
+
+apiRoute.use(multer().any());
+
+apiRoute.patch(async (req, res) => {
   const { cpf } = req.query;
+  await updateUser(cpf, req.body, req.files);
+  res.json("User updated!");
+  res.status(200).json({ data: "success" });
+});
 
-  switch (req.method) {
-    case "GET":
-      const users = await getUser(cpf);
-      res.json(users);
-      break;
-    case "DELETE":
-      try {
-        await deleteUser(cpf);
-        res.json("User deleted!");
-      } catch (error) {
-        console.error("Unable to delete: ", error);
-        res.json("Unable to delete User!");
-      }
-      break;
-    case "PATCH":
-      const { body } = req;
-      try {
-        await updateUser(cpf, body);
-        res.json("User updated!");
-      } catch (error) {
-        console.error("Unable to update: ", error);
-        res.json("Unable to update User!");
-      }
-      break;
+apiRoute.get(async (req, res) => {
+  const { cpf } = req.query;
+  const users = await getUser(cpf);
+  res.json(users);
+});
 
-    default:
-      res.status(405).send("Method Not Allowed");
-      break;
-  }
-}
+apiRoute.delete(async (req, res) => {
+  const { cpf } = req.query;
+  await deleteUser(cpf);
+  res.json("deleted!");
+});
+
+export default apiRoute;
+
+export const config = {
+  api: {
+    bodyParser: false, // Disallow body parsing, consume as stream
+  },
+};
