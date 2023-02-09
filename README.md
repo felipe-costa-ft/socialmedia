@@ -44,3 +44,10 @@ No projeto foram utilizados o CRUD (Métodos http GET,POST, DELETE, PATCH) de 3 
 - Arquvo de configuração do banco de dados no backend: **/src/lib/db.js**
 
 Obs.: View e procedure estão no final do arquivo **social.sql**
+
+## Checklist
+
+- [x] Script que gerou o banco de dados: **/social.sql**
+- [x] Utilização de pelo menos uma View: está no final do arquivo **social.sql**
+- [x] Utilização de pelo menos uma Procedure: está no final do arquivo **social.sql**
+- [x] Inserção de um dado binário no banco: Tanto em **social.sql** quanto através do CRUD
