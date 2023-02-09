@@ -1,38 +1,46 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Projeto - Rede Social
 
-## Getting Started
+Alunos:
 
-First, run the development server:
+Felipe da Graça Costa, Matrícula: 170141667<br/>
+Hiago dos Santos Rabelo, Matrícula: 160124492
+
+## Introdução
+
+O projeto de banco de dados para aplicativo de rede social é inspirado em um subconjunto de opções disponíveis no Facebook e no Instagram, com o usuário tendo a opção de realizar o cadastro e de interagir com outros usuários através de criação de posts em páginas, podendo outros usuários comentarem esse post ou seguir o usuário.
+Também se destaca a possibilidade de interação entre os usuários da criação de grupos, da inserção de hobbies ao perfil e da localização. Sendo que uma aplicação da localização é quanto a possibilidade de filtrar tanto anúncios, instituições de ensino e outros usuários que estejam próximos.<br/><br/>
+A rede social também tem a possibilidade de anexar anúncios aos posts, e para tornar a prática de marketing possível dentro da rede social, cada usuário tem um atributo de saldo com valor default de zero e que pode ser utilizado para colocar o anúncio como premium. Embora o saldo default seja zero, no código sql de exemplo é realizado um update em um registro da tabela usuário para simular a inserção de saldo.<br/><br/>
+Os anúncios são distinguidos entre premiums e não premiums, os não premiums são deletados após 30 dias da data de postagem enquanto que os premiums permanecem por 60 dias. Uma procedure é responsável pelo descarte dos anúncios de acordo com o plano anexado. Outra procedure é utilizada para a criação do anúncio com a função de verificar se o usuário tem o saldo mínimo necessário para colocar um anúncio como premium, caso tenha o valor e ele deseje então é descontado da conta, caso contrário é criado sem ser premium e levantado um aviso.<br/><br/>
+Acerca da inserção de dados no banco de dados, pode ser realizado através da interação com o frontend pelas chamadas das funções CRUD implementadas no backend do servidor criado, ou então através de queries diretas no PostgreSQL. A inserção de imagens é realizada em ambos os modos e demonstrado no código SQL de exemplo.
+
+## Como rodar
+
+- Deve ser instalado o node.js versão 18 (https://nodejs.org/en/)
+- Rodar o código SQL que gera o banco de dados no postgres
+- o banco de dados deve conter a seguinte configuração:
+  ```
+          user: "postgres",
+          host: "localhost",
+          database: "social",
+          password: "postgres",
+          port: "5432",
+  ```
+- Caso seu banco de dados esteja configurado de outra maneira, você deve editar o arquivo /src/lib/db.js
+- dentro da pasta do projeto, execute:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+        npm i
+        npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Acesso ao banco de dados
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+O código da API que realiza as leituras e escritas no banco de dados se encontra em **/src/pages/api**.
+No projeto foram utilizados o CRUD (Métodos http GET,POST, DELETE, PATCH) de 3 tabelas: usuario, postagem, comentario
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+## Arquivos importantes
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+- Script que gera o banco de dados: **/social.sql**
+- Arquvo de configuração do banco de dados no backend: **/src/lib/db.js**
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Obs.: View e procedure estão no final do arquivo **social.sql**
